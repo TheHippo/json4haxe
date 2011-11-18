@@ -1,0 +1,16 @@
+-cp test
+-cp std
+-main Test
+-neko bin/neko/test.n
+
+--next
+-cp test
+-cp std
+-main Test
+-php bin/php
+
+--next
+-cp test
+-cp std
+-main Test
+-js bin/js/test.js
