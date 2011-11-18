@@ -26,6 +26,9 @@ class TestCase extends haxe.unit.TestCase {
 			assertTrue(true);
 		}	
 	}
+	
+	public function testBool()
+		assertEquals('{"a":true,"b":false}',JSON.encode(JSON.decode('{"a":true,"b":false}')))
 }
 
 class Test {

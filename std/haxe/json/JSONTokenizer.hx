@@ -84,6 +84,13 @@ class JSONTokenizer {
 		// prime the pump by getting the first character
 		nextChar();
 	}
+	
+	private function readPossible(start:String,count:Int):String {
+		var possible = start;
+		while (count-- > 0)
+			possible+= nextChar();
+		return possible;
+	}
 	/**
 	 * Gets the next token in the input sting and advances
 	 * the character to the next character after the token
@@ -113,14 +120,7 @@ class JSONTokenizer {
 				nextChar();
 				return tCOLON;
 			case 't': // attempt to read true
-				#if cpp
-				var possibleTrue:String = "t";
-				possibleTrue = possibleTrue + nextChar();
-				possibleTrue = possibleTrue + nextChar();
-				possibleTrue = possibleTrue + nextChar();
-				#else
-				var possibleTrue:String = "t" + (this.nextChar() + this.nextChar() + this.nextChar());
-				#end
+				var possibleTrue = readPossible("t", 3);
 				if ( possibleTrue == "true" ) {
 					nextChar();
 					return tTRUE;
@@ -128,15 +128,7 @@ class JSONTokenizer {
 					parseError( "Expecting 'true' but found " + possibleTrue );
 				}
 			case 'f': // attempt to read false
-				#if cpp
-				var possibleFalse = "f";
-				possibleFalse = possibleFalse + nextChar();
-				possibleFalse = possibleFalse + nextChar();
-				possibleFalse = possibleFalse + nextChar();
-				possibleFalse = possibleFalse + nextChar();
-				#else
-				var possibleFalse:String = "f" + nextChar() + nextChar() + nextChar() + nextChar();
-				#end				
+				var possibleFalse = readPossible("f", 4);
 				if ( possibleFalse == "false" ) {
 					nextChar();
 					return tFALSE;
@@ -144,14 +136,7 @@ class JSONTokenizer {
 					parseError( "Expecting 'false' but found " + possibleFalse );
 				}
 			case 'n': // attempt to read null
-				#if cpp
-				var possibleNull:String = "n";
-				possibleNull = possibleNull + nextChar();
-				possibleNull = possibleNull + nextChar();
-				possibleNull = possibleNull + nextChar();
-				#else
-				var possibleNull:String = "n" + nextChar() + nextChar() + nextChar();
-				#end
+				var possibleNull = readPossible("n", 3);
 				if ( possibleNull == "null" ) {
 					nextChar();
 					return tNULL;
@@ -159,13 +144,7 @@ class JSONTokenizer {
 					parseError( "Expecting 'null' but found " + possibleNull );
 				}
 			case 'N': //attempt to read NAN
-				#if cpp
-				var possibleNAN = "N";
-				possibleNAN = possibleNAN + nextChar();
-				possibleNAN = possibleNAN + nextChar();
-				#else
-				var possibleNAN:String = 'N' + nextChar() + nextChar();
-				#end
+				var possibleNAN = readPossible("N", 2);
 				if (possibleNAN == "NAN" || possibleNAN == "NaN") {
 					nextChar();
 					return tNAN;
