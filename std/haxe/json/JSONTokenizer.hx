@@ -157,7 +157,11 @@ class JSONTokenizer {
 			default: 
 				// see if we can read a number
 				if ( isDigit( ch ) || ch == '-' ) {
-					return tNUMBER(readNumber());
+					var num = readNumber();
+					return if (Math.floor(num) == num)
+						tINT(Std.int(num))
+					else
+						tNUMBER(num);
 				} else if ( ch == '' ) {
 					// check for reading past the end of the string
 					return null;

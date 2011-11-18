@@ -228,6 +228,8 @@ class JSONDecoder {
 				return s;
 			case tNUMBER(f):
 				return f;
+			case tINT(i):
+				return i;
 			case tTRUE:
 				return true;
 			case tFALSE:
