@@ -41,7 +41,7 @@ class JSON {
 	 * @param o The object to create a JSON string for
 	 * @return the JSON string representing o
 	 */
-	public inline static function encode(o:Dynamic):String {		
+	public inline static function encode(o:Dynamic):String {
 		return new JSONEncoder(o).getString();
 	}
 	
@@ -51,7 +51,7 @@ class JSON {
 	 * @param s The JSON string representing the object
 	 * @return A native object as specified by s
 	 */
-	public inline static function decode(s:String,strict:Bool=true):Dynamic {		
+	public inline static function decode(s:String,strict:Bool=true):Dynamic {
 		return new JSONDecoder(s,strict).getValue();
 	}
 	
@@ -61,7 +61,7 @@ class JSON {
 	 * @param o The object to create a JSON string for
 	 * @return the JSON string representing o
 	 */
-	public inline static function stringify(o:Dynamic):String {		
+	public inline static function stringify(o:Dynamic):String {
 		return new JSONEncoder(o).getString();
 	}
 	
