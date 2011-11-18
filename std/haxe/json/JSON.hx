@@ -34,6 +34,37 @@
 package haxe.json;
 
 class JSON {
+	
+	static var nativeEncode:Dynamic->String = getNativeEncode();
+	static var nativeDecode:String->Dynamic = getNativeDecode();
+	
+	static function getNativeEncode():Dynamic->String {
+		#if js
+		untyped {
+			if (__js__("JSON && JSON.stringify"))
+				return __js__("JSON.stringify");
+		}
+		#elseif php
+		return function (o:Dynamic):String untyped {
+			return __call__("json_encode",o);
+		}
+		#end
+		return null;
+	}
+	
+	static function getNativeDecode():Dynamic->String {
+		#if js
+		untyped {
+			if (__js__("JSON && JSON.parse"))
+				return __js__("JSON.parse");
+		}
+		#elseif php
+		return function (s:String):Dynamic untyped {
+			return __call__("json_decode",s);
+		}
+		#end
+		return null;
+	}
 
 	/**
 	 * Encodes a object into a JSON string.
@@ -41,8 +72,11 @@ class JSON {
 	 * @param o The object to create a JSON string for
 	 * @return the JSON string representing o
 	 */
-	public inline static function encode(o:Dynamic):String {
-		return new JSONEncoder(o).getString();
+	public inline static function encode(o:Dynamic, tryNative:Bool=true):String {
+		return if (tryNative && nativeEncode != null)
+			nativeEncode(o);
+		else
+			new JSONEncoder(o).getString();
 	}
 	
 	/**
@@ -51,8 +85,11 @@ class JSON {
 	 * @param s The JSON string representing the object
 	 * @return A native object as specified by s
 	 */
-	public inline static function decode(s:String,strict:Bool=true):Dynamic {
-		return new JSONDecoder(s,strict).getValue();
+	public inline static function decode(s:String,strict:Bool=true, tryNative:Bool=true):Dynamic {
+		return if (tryNative && nativeDecode != null)
+			nativeDecode(s);
+		else
+			new JSONDecoder(s,strict).getValue();
 	}
 	
 	/**
@@ -61,8 +98,8 @@ class JSON {
 	 * @param o The object to create a JSON string for
 	 * @return the JSON string representing o
 	 */
-	public inline static function stringify(o:Dynamic):String {
-		return new JSONEncoder(o).getString();
+	public inline static function stringify(o:Dynamic, tryNative:Bool=true):String {
+		return encode(o, tryNative);
 	}
 	
 	/**
@@ -71,8 +108,8 @@ class JSON {
 	 * @param s The JSON string representing the object
 	 * @return A native object as specified by s
 	 */
-	public inline static function parse(s:String,strict:Bool=true):Dynamic {
-		return new JSONDecoder(s,strict).getValue();
+	public inline static function parse(s:String,strict:Bool=true, tryNative:Bool=true):Dynamic {
+		return decode(s,strict, tryNative);
 	}
 	
 	

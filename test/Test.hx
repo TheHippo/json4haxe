@@ -15,7 +15,7 @@ class TestCase extends haxe.unit.TestCase {
 		assertEquals("{\"a\":\"b\"}",JSON.encode(JSON.decode("{\"a\":\"b\"}")))
 		
 	public function testObjectUnicode()
-		assertEquals('{"a":"a\\u00F6b\\u00E4c\\u00FCd\\u00DFe"}',JSON.encode(JSON.decode("{\"a\":\"aöbäcüdße\"}")))
+		assertEquals('{"a":"a\\u00f6b\\u00e4c\\u00fcd\\u00dfe"}',JSON.encode(JSON.decode("{\"a\":\"aöbäcüdße\"}")))
 		
 	public function testError() {
 		try {
