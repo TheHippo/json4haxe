@@ -68,7 +68,7 @@ class JSONDecoder {
 	 * the JSON string passed to the constructor.
 	 *
 	 * @return The internal object representation of the JSON
-	 * 		string that was passed to the constructor
+	 * string that was passed to the constructor
 	 */
 	public function getValue():Dynamic {
 		return value;
@@ -88,24 +88,24 @@ class JSONDecoder {
 	private function parseArray():Array < Dynamic > {
 		// create an array internally that we're going to attempt
 		// to parse from the tokenizer
-		var a:Array<Dynamic> = new Array<Dynamic>();		
+		var a:Array<Dynamic> = new Array<Dynamic>();
 		// grab the next token from the tokenizer to move
 		// past the opening [
-		nextToken();		
+		nextToken();
 		// check to see if we have an empty array
-		if ( token.type == tRIGHT_BRACKET ) {
+		if ( token == tRIGHT_BRACKET ) {
 			// we're done reading the array, so return it
 			return a;
 		}
 		else {
-			if (!strict && token.type == JSONTokenType.tCOMMA) {
+			if (!strict && token == tCOMMA) {
 				nextToken();
 				// check to see if we're reached the end of the array
-				if ( token.type == JSONTokenType.tRIGHT_BRACKET ){
-					return a;	
+				if ( token == tRIGHT_BRACKET ){
+					return a;
 				}
 				else {
-					tokenizer.parseError( "Leading commas are not supported.  Expecting ']' but found " + token.value );
+					tokenizer.parseError( "Leading commas are not supported.  Expecting ']' but found " + token );
 				}
 			}
 		}
@@ -113,25 +113,25 @@ class JSONDecoder {
 		// loop because we could have any amount of elements
 		while ( true ) {
 			// read in the value and add it to the array
-			a.push ( parseValue() );		
+			a.push ( parseValue() );
 			// after the value there should be a ] or a ,
-			nextToken();			
-			if ( token.type == tRIGHT_BRACKET ) {
+			nextToken();
+			if ( token == tRIGHT_BRACKET ) {
 				// we're done reading the array, so return it
 				return a;
-			} else if ( token.type == tCOMMA ) {
+			} else if ( token == tCOMMA ) {
 				// move past the comma and read another value
 				nextToken();
 				// Allow arrays to have a comma after the last element
 				// if the decoder is not in strict mode
 				if ( !strict ){
 					// Reached ",]" as the end of the array, so return it
-					if ( token.type == JSONTokenType.tRIGHT_BRACKET ){
+					if ( token == tRIGHT_BRACKET ){
 						return a;
 					}
 				}
 			} else {
-				tokenizer.parseError( "Expecting ] or , but found " + token.value );
+				tokenizer.parseError( "Expecting ] or , but found " + token );
 			}
 		}
 		return null;
@@ -143,51 +143,51 @@ class JSONDecoder {
 	private function parseObject():Dynamic {
 		// create the object internally that we're going to
 		// attempt to parse from the tokenizer
-		var o:Dynamic = { };					
+		var o:Dynamic = { };
 		// store the string part of an object member so
 		// that we can assign it a value in the object
-		var key:String;		
+		var key:String;
 		// grab the next token from the tokenizer
-		nextToken();		
+		nextToken();
 		// check to see if we have an empty object
-		if ( token.type == tRIGHT_BRACE ) {
+		if ( token == tRIGHT_BRACE ) {
 			// we're done reading the object, so return it
 			return o;
-		}	// in non-strict mode an empty object is also a comma
-			// followed by a right bracket
+		}
+		// in non-strict mode an empty object is also a comma
+		// followed by a right bracket
 		else { 
-			if ( !strict && token.type == JSONTokenType.tCOMMA )	{
+			if ( !strict && token == tCOMMA ) {
 				// move past the comma
-				nextToken();				
+				nextToken();
 				// check to see if we're reached the end of the object
-				if ( token.type == JSONTokenType.tRIGHT_BRACE )				{
+				if ( token == tRIGHT_BRACE ){
 					return o;
 				}
 				else {
-					tokenizer.parseError( "Leading commas are not supported.  Expecting '}' but found " + token.value );
+					tokenizer.parseError( "Leading commas are not supported.  Expecting '}' but found " + token );
 				}
 			}
 		}
 		// deal with members of the object, and use an "infinite"
 		// loop because we could have any amount of members
-		while ( true ) {		
-			if ( token.type == tSTRING ) {
-				// the string value we read is the key for the object
-				key = Std.string(token.value);				
+		while ( true ) {
+			switch (token) {
+				case tSTRING(key):
 				// move past the string to see what's next
-				nextToken();				
+				nextToken();
 				// after the string there should be a :
-				if ( token.type == tCOLON ) {					
+				if ( token == tCOLON ) {
 					// move past the : and read/assign a value for the key
 					nextToken();
-					Reflect.setField(o,key,parseValue());					
+					Reflect.setField(o,key,parseValue());
 					// move past the value to see what's next
-					nextToken();					
+					nextToken();
 					// after the value there's either a } or a ,
-					if ( token.type == tRIGHT_BRACE ) {
+					if ( token == tRIGHT_BRACE ) {
 						// // we're done reading the object, so return it
-						return o;						
-					} else if ( token.type == tCOMMA ) {
+						return o;
+					} else if ( token == tCOMMA ) {
 						// skip past the comma and read another member
 						nextToken();
 						
@@ -195,18 +195,18 @@ class JSONDecoder {
 						// if the decoder is not in strict mode
 						if ( !strict ){
 							// Reached ",}" as the end of the object, so return it
-							if ( token.type == JSONTokenType.tRIGHT_BRACE )	{
+							if ( token == tRIGHT_BRACE ){
 								return o;
 							}
-						}						
+						}
 					} else {
-						tokenizer.parseError( "Expecting } or , but found " + token.value );
+						tokenizer.parseError( "Expecting } or , but found " + token );
 					}
 				} else {
-					tokenizer.parseError( "Expecting : but found " + token.value );
+					tokenizer.parseError( "Expecting : but found " + token );
 				}
-			} else {
-				tokenizer.parseError( "Expecting string but found " + token.value );
+				default:
+					tokenizer.parseError( "Expecting string but found " + token );
 			}
 		}
 		return null;
@@ -215,19 +215,19 @@ class JSONDecoder {
 	/**
 	 * Attempt to parse a value
 	 */
-	private function parseValue():Dynamic	{
+	private function parseValue():Dynamic {
 		// Catch errors when the input stream ends abruptly
 		if ( token == null )
 			tokenizer.parseError( "Unexpected end of input" );
-		switch ( token.type ) {
+		switch ( token ) {
 			case tLEFT_BRACE:
 				return parseObject();
 			case tLEFT_BRACKET:
 				return parseArray();
-			case tSTRING:
-				return token.value;
-			case tNUMBER:
-				return token.value;
+			case tSTRING(s):
+				return s;
+			case tNUMBER(f):
+				return f;
 			case tTRUE:
 				return true;
 			case tFALSE:
@@ -236,11 +236,11 @@ class JSONDecoder {
 				return null;
 			case tNAN:
 				if (!strict)
-					return token.value;
+					return Math.NaN;
 				else
-					tokenizer.parseError( "Unexpected " + token.value );
+					tokenizer.parseError( "Unexpected " + token );
 			default:
-				tokenizer.parseError( "Unexpected " + token.value );				
+				tokenizer.parseError( "Unexpected " + token );
 		}
 		return null;
 	}

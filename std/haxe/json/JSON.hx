@@ -71,7 +71,7 @@ class JSON {
 	 * @param s The JSON string representing the object
 	 * @return A native object as specified by s
 	 */
-	public inline static function parse(s:String,strict:Bool=true):Dynamic {		
+	public inline static function parse(s:String,strict:Bool=true):Dynamic {
 		return new JSONDecoder(s,strict).getValue();
 	}
 	

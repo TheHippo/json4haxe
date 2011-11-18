@@ -39,8 +39,6 @@ import neko.Utf8;
 import php.Utf8;
 #end
 
-	//import flash.utils.describeType;
-
 class JSONEncoder {
 
 	/** The string that is going to represent the object we're encoding */
@@ -52,7 +50,7 @@ class JSONEncoder {
 	 * @param o The object to encode as a JSON string
 	 */
 	public function new(value:Dynamic) {
-		jsonString = convertToString(value);	
+		jsonString = convertToString(value);
 	}
 	
 	/**
@@ -71,26 +69,26 @@ class JSONEncoder {
 	 * @param value The value to convert.  Could be any 
 	 *		type (object, number, array, etc)
 	 */
-	private function convertToString(value:Dynamic):String {		
+	private function convertToString(value:Dynamic):String {
 		if (Std.is(value, List) || Std.is(value,IntHash))
 			value = Lambda.array(value);
 		if (Std.is(value, Hash))
-			value = mapHash(value);		
+			value = mapHash(value);
 		// determine what value is and convert it based on it's type
-		if ( Std.is(value,String )) {			
-			// escape the string so it's formatted correctly			
+		if ( Std.is(value,String )) {
+			// escape the string so it's formatted correctly
 			return escapeString(cast(value, String));
-			//return escapeString( value as String );			
-		} else if ( Std.is(value,Float) ) {			
+			//return escapeString( value as String );
+		} else if ( Std.is(value,Float) ) {
 			// only encode numbers that finate
 			return Math.isFinite(cast(value,Float)) ? value+"" : "null";
-		} else if ( Std.is(value,Bool) ) {			
+		} else if ( Std.is(value,Bool) ) {
 			// convert boolean to string easily
 			return value ? "true" : "false";
-		} else if ( Std.is(value,Array)) {		
+		} else if ( Std.is(value,Array)) {
 			// call the helper method to convert an array
-			return arrayToString(cast(value,Array<Dynamic>));		
-		} else if (Std.is(value,Dynamic) && value != null ) {		
+			return arrayToString(cast(value,Array<Dynamic>));
+		} else if (Std.is(value,Dynamic) && value != null ) {
 			// call the helper method to convert an object
 			return objectToString( value );
 		}
@@ -128,7 +126,7 @@ class JSONEncoder {
 			len = Utf8.length(str);
 		#end
 		// loop over all of the characters in the string
-		for (i in 0...len) {		
+		for (i in 0...len) {
 			// examine the character to determine if we have to escape it
 			ch = str.charAt( i );
 			#if neko
@@ -140,20 +138,20 @@ class JSONEncoder {
 				ch = Utf8.sub(str,i,1);
 			}
 			#end
-			switch ( ch ) {			
-				case '/':	// solidus
+			switch ( ch ) {
+				case '/': // solidus
 					s += "\\/";
-				case '"':	// quotation mark
-					s += "\\\"";					
-				case '\\':	// reverse solidus
+				case '"': // quotation mark
+					s += "\\\"";
+				case '\\': // reverse solidus
 					s += "\\\\";
-				case '\n':	// newline
+				case '\n': // newline
 					s += "\\n";
-				case '\r':	// carriage return
+				case '\r': // carriage return
 					s += "\\r";
-				case '\t':	// horizontal tab
-					s += "\\t";						
-				default:	// everything else					
+				case '\t': // horizontal tab
+					s += "\\t";
+				default: // everything else
 					// check for a control character and escape as unicode
 					var code = ch.charCodeAt(0);
 					#if neko
@@ -178,15 +176,15 @@ class JSONEncoder {
 						for (j in 0...4 - hexCode.length) {
 							zeroPad += "0" ;
 						}
-						//var zeroPad:String = hexCode.length == 2 ? "00" : "000";						
+						//var zeroPad:String = hexCode.length == 2 ? "00" : "000";
 						// create the unicode escape sequence with 4 hex digits
 						s += "\\u" + zeroPad + hexCode;
-					} else {					
+					} else {
 						// no need to do any special encoding, just pass-through
-						s += ch;						
+						s += ch;
 					}
-			}	// end switch			
-		}	// end for loop					
+			}	// end switch
+		}	// end for loop
 		return "\"" + s + "\"";
 	}
 	
@@ -199,7 +197,7 @@ class JSONEncoder {
 	private function arrayToString( a:Array < Dynamic > ):String {
 		//trace("arrayToString");
 		// create a string to store the array's jsonstring value
-		var s:String = "";		
+		var s:String = "";
 		// loop over the elements in the array and add their converted
 		// values to the string
 		for (i in 0...a.length) {
@@ -208,9 +206,9 @@ class JSONEncoder {
 			if ( s.length > 0 ) {
 				// we've already added an element, so add the comma separator
 				s += ",";
-			}			
+			}
 			// convert the value to a string
-			s += convertToString( a[i] );	
+			s += convertToString( a[i] );
 		}
 		
 		// KNOWN ISSUE:  In ActionScript, Arrays can also be associative
@@ -228,7 +226,7 @@ class JSONEncoder {
 		// A possible solution is to instead encode the Array as an Object
 		// but then it won't get decoded correctly (and won't be an
 		// Array instance)
-					
+		
 		// close the array and return it's string value
 		return "[" + s + "]";
 	}
@@ -243,15 +241,15 @@ class JSONEncoder {
 		//trace("objectToString");
 		//trace(o);
 		// create a string to store the object's jsonstring value
-		var s:String = "";		
-		var value:Dynamic;		
+		var s:String = "";
+		var value:Dynamic;
 		// loop over the keys in the object and add their converted
 		// values to the string
 		for ( key in Reflect.fields(o) ) {
 			// assign value to a variable for quick lookup
-			value = Reflect.field(o,key);			
+			value = Reflect.field(o,key);
 			// don't add function's to the JSON string
-			if (!Reflect.isFunction(value))	{
+			if (!Reflect.isFunction(value)) {
 				// when the length is 0 we're adding the first item so
 				// no comma is necessary
 				if ( s.length > 0 ) {
@@ -259,8 +257,8 @@ class JSONEncoder {
 					s += ",";
 				}
 				s += escapeString( key ) + ":" + convertToString( value );
-			}			
-		}		
+			}
+		}
 		return "{" + s + "}";
-	}	
+	}
 }

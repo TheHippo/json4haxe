@@ -36,10 +36,10 @@ package haxe.json;
 class JSONParseError {
 
 	/** The location in the string where the error occurred */
-	private var _location:Int;	
+	private var _location:Int;
 	/** The string in which the parse error occurred */
-	private var _text:String;	
-	private var name:String;	
+	private var _text:String;
+	private var name:String;
 	public var text(gettext, null):String;
 	public var location(getlocation, null):Int;	
 	private var message:String;
