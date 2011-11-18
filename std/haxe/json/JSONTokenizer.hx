@@ -547,6 +547,10 @@ class JSONTokenizer {
 	 * @param message The message indicating why the error occurred
 	 */
 	public function parseError( message:String ):Dynamic {
-		throw new JSONParseError( message, loc, jsonString );
+		throw { 
+			text: jsonString,
+			location: loc,
+			message:message
+		};
 	}
 }

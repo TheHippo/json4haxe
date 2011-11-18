@@ -16,7 +16,16 @@ class TestCase extends haxe.unit.TestCase {
 		
 	public function testObjectUnicode()
 		assertEquals('{"a":"a\\u00F6b\\u00E4c\\u00FCd\\u00DFe"}',JSON.encode(JSON.decode("{\"a\":\"aöbäcüdße\"}")))
-	
+		
+	public function testError() {
+		try {
+			JSON.decode("[1,2,3");
+			assertTrue(false);
+		}
+		catch (e:Dynamic) {
+			assertTrue(true);
+		}	
+	}
 }
 
 class Test {
