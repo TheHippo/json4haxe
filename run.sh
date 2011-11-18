@@ -1,7 +1,13 @@
 #!/bin/bash
-echo "running neko"
+echo "===================="
+echo "==  running neko  =="
+echo "====/==============="
 neko bin/neko/test.n
-echo "running php"
+echo "==================="
+echo "==  running php  =="
+echo "==================="
 php -f bin/php/index.php
-echo "running js"
+echo "=================="
+echo "==  running js  =="
+echo "=================="
 ./deps/phantomjs/bin/phantomjs bin/js/test.js

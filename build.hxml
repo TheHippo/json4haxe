@@ -1,16 +1,19 @@
 -cp test
 -cp std
+-cp custom
 -main Test
 -neko bin/neko/test.n
 
 --next
 -cp test
 -cp std
+-cp custom
 -main Test
 -php bin/php
 
 --next
 -cp test
 -cp std
+-cp custom
 -main Test
 -js bin/js/test.js
