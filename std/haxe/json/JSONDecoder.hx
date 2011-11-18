@@ -33,21 +33,7 @@
 
 package haxe.json;
 
-enum JSONTokenType {	
-	tUNKNOWN;	
-	tCOMMA;	
-	tLEFT_BRACE;		
-	tRIGHT_BRACE;		
-	tLEFT_BRACKET;		
-	tRIGHT_BRACKET;		
-	tCOLON;		
-	tTRUE;		
-	tFALSE;		
-	tNULL;		
-	tSTRING;		
-	tNUMBER;
-	tNAN;
-}
+import haxe.json.JSONTokenizer;
 
 class JSONDecoder {
 	

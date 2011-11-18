@@ -41,6 +41,29 @@ import neko.Utf8;
 import php.Utf8;
 #end
 
+typedef JSONToken = {
+	/** type of the token */
+	public var type:JSONTokenType;
+	/** value of the token */
+	public var value:Dynamic;
+}
+
+enum JSONTokenType {	
+	tUNKNOWN;	
+	tCOMMA;	
+	tLEFT_BRACE;		
+	tRIGHT_BRACE;		
+	tLEFT_BRACKET;		
+	tRIGHT_BRACKET;		
+	tCOLON;		
+	tTRUE;		
+	tFALSE;		
+	tNULL;		
+	tSTRING;		
+	tNUMBER;
+	tNAN;
+}
+
 class JSONTokenizer {	
 	/** The object that will get parsed from the JSON string */
 	private var obj:Dynamic;	
@@ -63,17 +86,28 @@ class JSONTokenizer {
 	public function new(s:String,strict:Bool) {
 		jsonString = s;
 		this.strict = strict;
-		loc = 0;		
+		loc = 0;
 		// prime the pump by getting the first character
 		nextChar();
 	}
-	
+	/**
+	 * Creates a new JSONToken with a specific token type and value.
+	 *
+	 * @param type The JSONTokenType of the token
+	 * @param value The value of the token
+	 */
+	private inline function generateToken(?type:JSONTokenType,?value:Dynamic = null):JSONToken {
+		return {
+			type: type == null ? tUNKNOWN : type,
+			value: value
+		}
+	}
 	/**
 	 * Gets the next token in the input sting and advances
 	* the character to the next character after the token
 	 */
 	public function getNextToken():JSONToken {
-		var token:JSONToken = new JSONToken();		
+		var token:JSONToken = generateToken();		
 		// skip any whitespace / comments since the last 
 		// token was read
 		skipIgnored();					
@@ -274,7 +308,7 @@ class JSONTokenizer {
 		// move past the closing " in the input string
 		nextChar();		
 		// the token for the string we'll try to read
-		var token:JSONToken = new JSONToken();
+		var token:JSONToken = generateToken();
 		token.type = tSTRING;
 		// attach to the string to the token so we can return it
 		token.value = string;		
@@ -406,7 +440,7 @@ class JSONTokenizer {
 		var num:Float = Std.parseFloat(input);		
 		if ( Math.isFinite( num ) && !Math.isNaN( num ) ) {
 			// the token for the number we'll try to read
-			var token:JSONToken = new JSONToken();
+			var token:JSONToken = generateToken();
 			token.type = tNUMBER;
 			token.value = num;
 			return token;
